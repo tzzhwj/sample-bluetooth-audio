@@ -24,10 +24,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.things.bluetooth.BluetoothProfileManager;
 import com.google.android.things.contrib.driver.button.Button;
@@ -73,6 +76,8 @@ public class A2dpSinkActivity extends Activity {
     private ButtonInputDriver mDisconnectAllButtonDriver;
 
     private TextToSpeech mTtsEngine;
+
+    private AudioManager mAudioManager;
 
     /**
      * Handle an intent that is broadcast by the Bluetooth adapter whenever it changes its
@@ -149,6 +154,8 @@ public class A2dpSinkActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             Log.w(TAG, "No default Bluetooth adapter. Device likely does not support bluetooth.");
@@ -173,6 +180,28 @@ public class A2dpSinkActivity extends Activity {
             mBluetoothAdapter.enable();
         }
 
+        mAudioManager = getSystemService(AudioManager.class);
+
+        final android.widget.Button raise_button = (android.widget.Button) findViewById(R.id.raise_voice);
+        final android.widget.Button lower_button = (android.widget.Button) findViewById(R.id.lower_voice);
+
+        raise_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAudioManager.adjustVolume(AudioManager.ADJUST_RAISE, 0);
+
+                Toast.makeText(A2dpSinkActivity.this, "增大音量", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        lower_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAudioManager.adjustVolume(AudioManager.ADJUST_LOWER, 0);
+
+                Toast.makeText(A2dpSinkActivity.this, "缩小音量", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
